@@ -1,7 +1,16 @@
+button {
+    font-size: 50px;
+}
+
+#main-container {
+    padding: 100px;
+}
+
 #display {
     border: 2px solid black;
     font-size: 50px;
     text-align: right;
+    min-height: 60px;
 }
 
 #input-container {

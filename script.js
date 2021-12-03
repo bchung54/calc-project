@@ -1,3 +1,5 @@
+const display = (answer) => document.querySelector("#display").innerText = answer;
+
 const add = (x, y) => x + y;
 
 const subtract = (x, y) => x - y;
@@ -19,7 +21,11 @@ const operate = function(operator, x, y) {
     }
 };
 
-let cache = '';
+const cache = Array(4).fill('');
+
+const clearCache = () => cache.splice(0, 3, '', '', '');
+
+const isAnyCacheEmpty = () => cache.some((item) => item === '');
 // const sumArr = function(arr) {
 // 	return arr.reduce((total, item) => total + item, 0);
 // };
@@ -41,6 +47,49 @@ let cache = '';
 //   return number <= 1 ? 1: multiply(Array.from(Array(number), (_, index) => index + 1));
 // };
 
+const numButtonFunction = function(node) {
+    node.onclick = (e) => {
+        const digit = e.target.innerText;
+
+        if (cache[3] === '=' && !isAnyCacheEmpty()) {
+            clearCache();
+            cache[0] += digit;
+            display(cache[0]);
+        } else if (cache[1]) {
+            cache[2] += digit;
+            display(cache[2]);
+        } else {
+            cache[0] += digit;
+            display(cache[0]);
+        }
+    }
+};
+
+const operatorButtonFunction = function(node) {
+
+    // evaluates expression whenever an operator is pressed after full cache
+    node.addEventListener("click", (e) => {
+        if (!isAnyCacheEmpty()) {
+            let answer = Math.round(operate(cache[1], parseInt(cache[0]), parseInt(cache[2])) * 10 ** 8) / (10 ** 8);
+            display(answer);
+            cache[0] = answer.toString();
+            if (e.target.innerText !== '=') cache[2] = '';
+        }
+    });
+
+    // place operator into cache[1] if there is first input number and no second input number
+    if (node.innerText !== '=') {
+        node.addEventListener("click", (e) => {
+            if (cache[0] && !cache[2]) {
+                cache[1] = e.target.innerText;
+            }
+        });
+    }
+
+    // caches input to be used as previous input for next button click
+    node.addEventListener("click", (e) => cache[3] = e.target.innerText);
+};
+
 const createNumPad = function() {
     const container = document.getElementById("numpad-container");
     for (let i = 0; i < 3; i++) {
@@ -51,9 +100,7 @@ const createNumPad = function() {
             let cell = document.createElement("button");
             cell.className = "num-button";
             cell.innerText = (3 * i) + j;
-            cell.onclick = (e) => {
-                cache += e.target.innerText;
-            };
+            numButtonFunction(cell);
             row.appendChild(cell);
         }
 
@@ -70,6 +117,10 @@ const createNumPad = function() {
     let clearButton = document.createElement("button");
     clearButton.className = "num-button";
     clearButton.innerText = 'C';
+    clearButton.onclick = () => {
+        clearCache();
+        display(0);
+    }
 
     topRow.appendChild(clearButton);
     container.insertBefore(topRow, container.firstChild);
@@ -80,6 +131,7 @@ const createNumPad = function() {
     let zeroButton = document.createElement("button");
     zeroButton.className = "num-button";
     zeroButton.innerText = 0;
+    numButtonFunction(zeroButton);
 
     let decimalButton = document.createElement("button");
     decimalButton.className = "num-button";
@@ -103,8 +155,9 @@ const createOperatorPad = function() {
         let cell = document.createElement("button");
         cell.className = "operator-button";
         cell.innerText = item;
+        operatorButtonFunction(cell);
         container.appendChild(cell);
-    })
+    });
 };
 
 
