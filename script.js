@@ -1,4 +1,13 @@
-const display = (answer) => document.querySelector("#display").innerText = answer;
+const display = (answer) => {
+    if (isNaN(answer)) {
+        answer = "Bless you!";
+        document.querySelector("#display").innerText = answer;
+        return null;
+    }
+    if (answer.toString().length > 9) answer = answer.toExponential();
+    if (answer >= 10 ** 18) answer = "idek";
+    document.querySelector("#display").innerText = answer;
+};
 
 const add = (x, y) => x + y;
 
@@ -70,7 +79,7 @@ const operatorButtonFunction = function(node) {
     // evaluates expression whenever an operator is pressed after full cache
     node.addEventListener("click", (e) => {
         if (!isAnyCacheEmpty()) {
-            let answer = Math.round(operate(cache[1], parseInt(cache[0]), parseInt(cache[2])) * 10 ** 8) / (10 ** 8);
+            let answer = Math.round(operate(cache[1], parseFloat(cache[0]), parseFloat(cache[2])) * 10 ** 7) / (10 ** 7);
             display(answer);
             cache[0] = answer.toString();
             if (e.target.innerText !== '=') cache[2] = '';
@@ -115,7 +124,7 @@ const createNumPad = function() {
     topRow.className = "row";
 
     let clearButton = document.createElement("button");
-    clearButton.className = "num-button";
+    clearButton.id = "clear-button";
     clearButton.innerText = 'C';
     clearButton.onclick = () => {
         clearCache();
@@ -134,12 +143,12 @@ const createNumPad = function() {
     numButtonFunction(zeroButton);
 
     let decimalButton = document.createElement("button");
-    decimalButton.className = "num-button";
+    decimalButton.id = "decimal-button";
     decimalButton.innerText = '.';
 
     let negativeButton = document.createElement("button");
-    negativeButton.className = "num-button";
-    negativeButton.innerText = '+/-';
+    negativeButton.id = "negative-button";
+    negativeButton.innerText = '(-)';
 
 
     bottomRow.appendChild(zeroButton);
