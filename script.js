@@ -1,5 +1,9 @@
 const display = (answer) => {
     if (isNaN(answer)) {
+        if (answer == '.') {
+            document.querySelector("#display").innerText = answer;
+            return null;
+        }
         answer = "Bless you!";
         document.querySelector("#display").innerText = answer;
         return null;
@@ -108,7 +112,8 @@ const createNumPad = function() {
         for (let j = 1; j <= 3; j++) {
             let cell = document.createElement("button");
             cell.className = "num-button";
-            cell.innerText = (3 * i) + j;
+            const number = (3 * i) + j;
+            cell.innerText = number;
             numButtonFunction(cell);
             row.appendChild(cell);
         }
@@ -145,10 +150,44 @@ const createNumPad = function() {
     let decimalButton = document.createElement("button");
     decimalButton.id = "decimal-button";
     decimalButton.innerText = '.';
+    decimalButton.addEventListener("click", () => {
+        if (cache[1]) {
+            if (!cache[2].includes('.')) {
+                if (!cache[2]) {
+                    cache[2] = "0.";
+                    display(cache[2]);
+                } else {
+                    cache[2] += '.';
+                    display(cache[2]);
+                }
+            }
+        } else {
+            if (!cache[0].includes('.')) {
+                if (!cache[0]) {
+                    cache[0] = "0.";
+                    display(cache[0]);
+                } else {
+                    cache[0] += '.';
+                    display(cache[0]);
+                }
+            }
+        }
+    });
 
     let negativeButton = document.createElement("button");
     negativeButton.id = "negative-button";
     negativeButton.innerText = '(-)';
+    negativeButton["data-key"]
+    negativeButton.addEventListener("click", () => {
+        if (cache[1]) {
+            cache[2] = '-' + cache[2];
+            display(cache[2]);
+         } else {
+            cache[0] = '-' + cache[0];
+            display(cache[0]);
+         }
+
+    });
 
 
     bottomRow.appendChild(zeroButton);
