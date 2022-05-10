@@ -1,26 +1,17 @@
-const display = (answer) => {
-    if (isNaN(answer)) {
-        if (answer == '.') {
-            document.querySelector("#display").innerText = answer;
-            return null;
-        }
-        answer = "Bless you!";
-        document.querySelector("#display").innerText = answer;
-        return null;
-    }
-    if (answer.toString().length > 9) answer = answer.toExponential();
-    if (answer >= 10 ** 18) answer = "idek";
-    document.querySelector("#display").innerText = answer;
-};
+// Variables
+const numButtons = document.querySelectorAll('.num-button');
+const operators = document.querySelectorAll('.operator-button');
+const equalButton = document.querySelector('.equals-button');
+const clearButton = document.querySelector('#clear-button');
+const negativeButton = document.querySelector('#negative');
+const decimalButton = document.querySelector('#decimal');
+const backspaceButton = document.querySelector('#backspace-button');
 
+// Math functions
 const add = (x, y) => x + y;
-
 const subtract = (x, y) => x - y;
-
 const multiply = (x, y) => x * y;
-
 const divide = (x, y) => y === 0 ? undefined : x / y;
-
 const operate = function(operator, x, y) {
     switch (operator) {
         case '+':
@@ -34,180 +25,197 @@ const operate = function(operator, x, y) {
     }
 };
 
-const cache = Array(4).fill('');
+// Cache and supporting functions
+var num1 = '';
+var num2 = '';
+var operator = '';
+var evaluated = false;
 
-const clearCache = () => cache.splice(0, 3, '', '', '');
+function checkOperator() {
+    return Boolean(operator);
+};
 
-const isAnyCacheEmpty = () => cache.some((item) => item === '');
-// const sumArr = function(arr) {
-// 	return arr.reduce((total, item) => total + item, 0);
-// };
+function clearCache() {
+    num1 = '';
+    num2 = '';
+    operator = '';
+    evaluated = false;
+};
 
-// const multiplyArr = function(arr) {
-//   return arr.reduce((product, item) => product * item, 1);
-// };
-
-// const power = function(x, y) {
-// 	return x ** y;
-// };
-
-// const factorial = function(number) {
-// 	// if (number <= 1) {
-//   //   return multiply([number]);
-//   // } else {
-//   //   return multiply(Array.from(Array(number), (_, index) => index + 1));
-//   // }
-//   return number <= 1 ? 1: multiply(Array.from(Array(number), (_, index) => index + 1));
-// };
-
-const numButtonFunction = function(node) {
-    node.onclick = (e) => {
-        const digit = e.target.innerText;
-
-        if (cache[3] === '=' && !isAnyCacheEmpty()) {
-            clearCache();
-            cache[0] += digit;
-            display(cache[0]);
-        } else if (cache[1]) {
-            cache[2] += digit;
-            display(cache[2]);
-        } else {
-            cache[0] += digit;
-            display(cache[0]);
+// Display function
+const display = (answer) => {
+    if (isNaN(answer)) {
+        if (answer == '.') {
+            document.querySelector("#display").textContent = answer;
+            return null;
         }
+        answer = "Bless you!";
+        document.querySelector("#display").textContent = answer;
+        return null;
+    }
+    if (answer.toString().length > 9) answer = answer.toExponential();
+    if (answer >= 10 ** 8) answer = "¯\\_(ツ)_/¯";
+    document.querySelector("#display").textContent = answer;
+};
+
+// Calculator functions
+function numFunction(digit) {
+        if (evaluated) {
+            // if previous expression has been evaluated, number pressed will replace num1 in cache
+            evaluated = false;
+            num1 = digit;
+            display(num1);
+            
+        } else if (Boolean(operator)) {
+            // if operator has been selected, number pressed will add to num2 in cache
+            Boolean(num2) ? num2 += digit : num2 = digit;
+            display(num2);
+
+        } else {
+            // add number pressed to num1 in cache
+            num1 += digit;
+            display(num1);
+        };
+};
+
+function operatorFunction(operation) {
+    if (Boolean(num1)) {
+        operator = operation;
+        num2 = '';
+        evaluated = false;
+    };
+};
+
+function equalFunction() {
+    if (Boolean(operator) && Boolean(num1) && Boolean(num2)) {
+        evaluated = true;
+        let answer = Math.round(operate(operator, parseFloat(num1), parseFloat(num2)) * 10 ** 7) / (10 ** 7);
+        display(answer);
+        num1 = answer.toString();
     }
 };
 
-const operatorButtonFunction = function(node) {
+function decimalFunction() {
+    let number;
+    Boolean(operator) ? number = num2 : number = num1;
 
-    // evaluates expression whenever an operator is pressed after full cache
-    node.addEventListener("click", (e) => {
-        if (!isAnyCacheEmpty()) {
-            let answer = Math.round(operate(cache[1], parseFloat(cache[0]), parseFloat(cache[2])) * 10 ** 7) / (10 ** 7);
-            display(answer);
-            cache[0] = answer.toString();
-            if (e.target.innerText !== '=') cache[2] = '';
-        }
-    });
-
-    // place operator into cache[1] if there is first input number and no second input number
-    if (node.innerText !== '=') {
-        node.addEventListener("click", (e) => {
-            if (cache[0] && !cache[2]) {
-                cache[1] = e.target.innerText;
-            }
-        });
-    }
-
-    // caches input to be used as previous input for next button click
-    node.addEventListener("click", (e) => cache[3] = e.target.innerText);
-};
-
-const createNumPad = function() {
-    const container = document.getElementById("numpad-container");
-    for (let i = 0; i < 3; i++) {
-        let row = document.createElement("div");
-        row.className = "row";
-
-        for (let j = 1; j <= 3; j++) {
-            let cell = document.createElement("button");
-            cell.className = "num-button";
-            const number = (3 * i) + j;
-            cell.innerText = number;
-            numButtonFunction(cell);
-            row.appendChild(cell);
-        }
-
-        if (i == 0) {
-            container.appendChild(row);
+    if (!number.includes('.')) {
+        if (!number) {
+            number = "0.";
         } else {
-            container.insertBefore(row, container.firstChild);
+            number += '.';
         }
     };
 
-    let topRow = document.createElement("div");
-    topRow.className = "row";
+    display(number);
+    Boolean(operator) ? num2 = number : num1  = number;
+};
 
-    let clearButton = document.createElement("button");
-    clearButton.id = "clear-button";
-    clearButton.innerText = 'C';
-    clearButton.onclick = () => {
-        clearCache();
-        display(0);
+function negativeFunction() {
+    let number;
+    Boolean(operator) ? number = num2 : number = num1;
+
+    if (number[0] == '-') {
+        number = number.substring(1);
+    } else {
+        number = '-' + number;
+    };
+
+    display(number);
+    Boolean(operator) ? num2 = number : num1 = number;
+};
+
+function backspaceFunction() {
+    let number;
+    Boolean(operator) ? number = num2 : number = num1;
+
+    if (Boolean(number)) {
+        number = number.slice(0,-1);
+        Boolean(number) ? display(number) : display(0);
+        Boolean(operator) ? num2 = number : num1 = number;
     }
+};
 
-    topRow.appendChild(clearButton);
-    container.insertBefore(topRow, container.firstChild);
+function clearCalcFunction() {
+    clearCache();
+    display(0);
+};
 
-    let bottomRow = document.createElement("div");
-    bottomRow.className = "row";
+// Function to add click eventlistener to number buttons
+const addNumClickListener = (node) => {
+    node.addEventListener("click", (event) => {
+        numFunction(event.target.textContent);
+    });
+};
 
-    let zeroButton = document.createElement("button");
-    zeroButton.className = "num-button";
-    zeroButton.innerText = 0;
-    numButtonFunction(zeroButton);
+// Function to add click eventlistener to operator buttons
+const addOperatorClickListener = (node) => {
+    node.addEventListener("click", (event) => {
+        operatorFunction(event.target.textContent);
+    });
+};
 
-    let decimalButton = document.createElement("button");
-    decimalButton.id = "decimal-button";
-    decimalButton.innerText = '.';
-    decimalButton.addEventListener("click", () => {
-        if (cache[1]) {
-            if (!cache[2].includes('.')) {
-                if (!cache[2]) {
-                    cache[2] = "0.";
-                    display(cache[2]);
-                } else {
-                    cache[2] += '.';
-                    display(cache[2]);
-                }
-            }
-        } else {
-            if (!cache[0].includes('.')) {
-                if (!cache[0]) {
-                    cache[0] = "0.";
-                    display(cache[0]);
-                } else {
-                    cache[0] += '.';
-                    display(cache[0]);
-                }
-            }
+// Add function eventlisteners to each button
+numButtons.forEach(addNumClickListener);
+operators.forEach(addOperatorClickListener);
+equalButton.addEventListener("click", equalFunction);
+decimalButton.addEventListener("click", decimalFunction);
+negativeButton.addEventListener("click", negativeFunction);
+backspaceButton.addEventListener("click", backspaceFunction);
+clearButton.addEventListener("click", clearCalcFunction);
+
+
+// Keyboard eventlistener
+window.addEventListener("keydown", function(event) {
+    if (event.defaultPrevented) {
+      return; // Do nothing if the event was already processed
+    };
+
+    const key = event.key;
+
+    // Digit cases
+    if (parseInt(key) + 1) {
+        numFunction(key);
+    } else{
+        switch (key) {
+            // Operator cases
+            case '+':
+            case '-':
+            case '*':
+            case '/':
+                operatorFunction(key);
+                break;
+            
+            // Equals cases
+            case '=':
+            case "Enter":
+                equalFunction();
+                break;
+            // Decimal case
+            case '.':
+                decimalFunction();
+                break;
+            // Negative case
+            case '_':
+                negativeFunction();
+                break;
+            // Backspace cases
+            case "Backspace":
+            case "Delete":
+                backspaceFunction(event);
+                break;
+            // Clear case
+            case "Escape":
+                clearCalcFunction();
+                break;
+            default:
+                console.log(key);
+                return;
         }
-    });
-
-    let negativeButton = document.createElement("button");
-    negativeButton.id = "negative-button";
-    negativeButton.innerText = '(-)';
-    negativeButton["data-key"]
-    negativeButton.addEventListener("click", () => {
-        if (cache[1]) {
-            cache[2] = '-' + cache[2];
-            display(cache[2]);
-         } else {
-            cache[0] = '-' + cache[0];
-            display(cache[0]);
-         }
-
-    });
-
-
-    bottomRow.appendChild(zeroButton);
-    bottomRow.appendChild(decimalButton);
-    bottomRow.appendChild(negativeButton);
-    container.appendChild(bottomRow);
-};
-
-const createOperatorPad = function() {
-    const container = document.getElementById("operator-container");
-    const operators = ['/', '*', '-', '+', '='];
-    operators.forEach(item => {
-        let cell = document.createElement("button");
-        cell.className = "operator-button";
-        cell.innerText = item;
-        operatorButtonFunction(cell);
-        container.appendChild(cell);
-    });
-};
-
-
-createNumPad();
-createOperatorPad();
+    };
+  
+    // Cancel the default action to avoid it being handled twice
+    event.preventDefault();
+  }, true);
+  // the last option dispatches the event to the listener first,
+  // then dispatches event to window

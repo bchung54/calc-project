@@ -12,7 +12,7 @@ button {
     border-radius: 8px;
 }
 
-.operator-button {
+.operator-button, .equals-button{
     background-color: orange;
 }
 
@@ -27,7 +27,7 @@ button {
     justify-content: center;
     align-items: stretch;
     height: 100vh;
-    width: 540px;
+    width: 550px;
 }
 
 #calc {
@@ -59,4 +59,15 @@ button {
 #clear-button {
     background-color: black;
     color: white;
+}
+
+#backspace-button {
+    font-family: 'Material Icons';
+    white-space: nowrap;
+    direction: ltr;
+}
+
+#top-row {
+    display: flex;
+    justify-content: space-between;
 }

@@ -6,15 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculator</title>
     <script src="script.js" defer></script>
-    <link rel="stylesheet" href="style.css">
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <div id="main">
         <div id="calc">
             <div id="display">0</div>
             <div id="input-container">
-                <div id="numpad-container"></div>
-                <div id="operator-container"></div>
+                <div id="numpad-container">
+                    <div class="row" id="top-row">
+                        <button id="clear-button" class="misc-buttons">C</button>
+                        <button id="backspace-button" class="misc-buttons">backspace</button>
+                    </div>
+
+                    <div class="row"> <!-- Rename to numpad-row -->
+                        <button class="num-button">7</button>
+                        <button class="num-button">8</button>
+                        <button class="num-button">9</button>
+                    </div>
+                    <div class="row">
+                        <button class="num-button">4</button>
+                        <button class="num-button">5</button>
+                        <button class="num-button">6</button>
+                    </div>
+                    <div class="row">
+                        <button class="num-button">1</button>
+                        <button class="num-button">2</button>
+                        <button class="num-button">3</button>
+                    </div>
+                    <div class="row">
+                        <button id="negative" class="misc-buttons">(-)</button>
+                        <button class="num-button">0</button>
+                        <button id="decimal" class="misc-buttons">.</button>
+                    </div>
+                </div>
+
+                <div id="operator-container">
+                    <button class="operator-button">/</button>
+                    <button class="operator-button">*</button>
+                    <button class="operator-button">-</button>
+                    <button class="operator-button">+</button>
+                    <button class="equals-button">=</button>
+                </div>
             </div>
         </div>
     </div>
