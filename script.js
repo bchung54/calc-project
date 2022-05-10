@@ -30,10 +30,9 @@ var num1 = '';
 var num2 = '';
 var operator = '';
 var evaluated = false;
+var number;
 
-function checkOperator() {
-    return Boolean(operator);
-};
+function assignNumberToEdit() {Boolean(operator) ? number = num2 : number = num1};
 
 function clearCache() {
     num1 = '';
@@ -96,8 +95,7 @@ function equalFunction() {
 };
 
 function decimalFunction() {
-    let number;
-    Boolean(operator) ? number = num2 : number = num1;
+    assignNumberToEdit();
 
     if (!number.includes('.')) {
         if (!number) {
@@ -112,8 +110,7 @@ function decimalFunction() {
 };
 
 function negativeFunction() {
-    let number;
-    Boolean(operator) ? number = num2 : number = num1;
+    assignNumberToEdit();
 
     if (number[0] == '-') {
         number = number.substring(1);
@@ -126,8 +123,7 @@ function negativeFunction() {
 };
 
 function backspaceFunction() {
-    let number;
-    Boolean(operator) ? number = num2 : number = num1;
+    assignNumberToEdit();
 
     if (Boolean(number)) {
         number = number.slice(0,-1);
